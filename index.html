@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>අලුත් අවුරුදු පුදුමය | කොකුම් කඩන්න</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #fef5e0 0%, #f9e0a0 100%);
+            font-family: 'Segoe UI', 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* අලුත් අවුරුදු රටා */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffcc77" opacity="0.2"><path d="M12,2L15,8.5L22,9.5L17,14L18.5,21L12,17.5L5.5,21L7,14L2,9.5L9,8.5L12,2Z"/></svg>');
+            background-size: 45px;
+            background-repeat: repeat;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ප්‍රධාන කාඩ් එක */
+        .surprise-card {
+            position: relative;
+            z-index: 20;
+            max-width: 580px;
+            width: 100%;
+            background: #fffaf2;
+            border-radius: 80px 80px 100px 100px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2), 0 0 0 10px #ffefb0, 0 0 0 14px #c97e2a;
+            text-align: center;
+            padding: 30px 25px 45px;
+            transition: 0.3s;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #b6492c;
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            color: #d47b2e;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* ක්‍රීඩා පෙට්ටිය */
+        .game-zone {
+            background: #f7ebcd;
+            border-radius: 70px;
+            padding: 25px 15px;
+            margin: 15px 0;
+            border: 2px solid #f7bc5a;
+            box-shadow: inset 0 0 0 5px #fff3e0, 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        .coconut-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .coconut {
+            background: #8b5a2b;
+            width: 130px;
+            height: 160px;
+            border-radius: 45% 45% 40% 40%;
+            position: relative;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 12px 0 #5a3a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .coconut:active {
+            transform: translateY(5px);
+            box-shadow: 0 6px 0 #5a3a1a;
+        }
+
+        .coconut-emoji {
+            font-size: 5rem;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+        }
+
+        .crack-text {
+            background: #f3cd81;
+            padding: 8px 14px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: #5a2e0e;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* hit counter */
+        .hit-counter {
+            background: #d9a13b;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        /* සප්‍රයිස් බඳුන */
+        .surprise-box {
+            margin-top: 25px;
+            background: #ffe3aa;
+            border-radius: 50px;
+            padding: 20px;
+            transition: all 0.4s cubic-bezier(0.34, 1.2, 0.8, 1);
+            border: 2px solid #ffb347;
+        }
+
+        .hidden-gift {
+            display: none;
+        }
+
+        .gift-visible {
+            display: block;
+            animation: pop 0.5s ease-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.6); opacity: 0; }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .gift-message {
+            font-size: 1.3rem;
+            background: #fff0c0;
+            padding: 18px;
+            border-radius: 40px;
+            color: #a5410f;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .gift-message span {
+            font-size: 2rem;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .reset-btn {
+            background: #ffaa55;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b4621a;
+            transition: 0.07s linear;
+            font-family: inherit;
+        }
+
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #b4621a;
+        }
+
+        .share-mini {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .mini-share-btn {
+            background: #25D366;
+            padding: 8px 18px;
+            border-radius: 40px;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 200px;
+            background: #2c5e2a;
+            color: white;
+            border-radius: 50px;
+            padding: 10px;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-weight: bold;
+            z-index: 300;
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 500px) {
+            .coconut { width: 100px; height: 130px; }
+            .coconut-emoji { font-size: 3.5rem; }
+            .gift-message { font-size: 1rem; }
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: #b47c44;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="surprise-card">
+    <h2>🏮 අලුත් අවුරුදු පුදුමය 🏮</h2>
+    <div class="sub">🌾 දිනන්න!</div>
+
+    <div class="game-zone">
+        <div class="coconut-area">
+            <div class="coconut" id="magicCoconut">
+                <div class="coconut-emoji">🥥</div>
+                <div class="crack-text">මෙතන තට්ටු කරන්න</div>
+            </div>
+        </div>
+        <div class="hit-counter" id="hitCountDisplay">පහර: 0 / 5</div>
+        <p style="margin-top: 10px; font-size: 0.85rem;">✨ පොල් ගෙඩියට 5 වතාවක් තට්ටු කරන්න ✨</p>
+    </div>
+
+    <!-- සැඟවුණු සප්‍රයිස් එක මුලින් නොපෙනේ -->
+    <div id="surpriseContainer" class="surprise-box hidden-gift">
+        <div class="gift-message" id="giftMessageBox">
+            🎁 <span>🎉🥥✨</span> 🎁
+        </div>
+    </div>
+
+    <div class="share-mini">
+        <button class="reset-btn" id="resetGameBtn">🔄 නැවත ක්‍රීඩා කරන්න</button>
+    </div>
+    <footer>🍬 පොල් ගෙඩිය කඩන්න, රන් සප්‍රයිස් එළියට එයි!</footer>
+</div>
+
+<div id="toastMessage" class="toast">🎉 පුදුමය සූදානම්!</div>
+
+<script>
+    (function() {
+        let hitCount = 0;
+        const requiredHits = 5;
+        let surpriseRevealed = false;
+
+        const coconutDiv = document.getElementById('magicCoconut');
+        const hitDisplay = document.getElementById('hitCountDisplay');
+        const surpriseContainer = document.getElementById('surpriseContainer');
+        const giftMsgDiv = document.getElementById('giftMessageBox');
+        const resetBtn = document.getElementById('resetGameBtn');
+        const whatsappBtn = document.getElementById('whatsappResultBtn');
+        const toastEl = document.getElementById('toastMessage');
+
+        function showToastMessage(msg, isError = false) {
+            toastEl.textContent = msg || (isError ? "😢 උනේ නෑ" : "🎉 සුබයි!");
+            toastEl.style.background = isError ? "#b4412e" : "#2c5e2a";
+            toastEl.classList.add('show');
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateHitDisplay() {
+            hitDisplay.innerText = `💥 පහර: ${hitCount} / ${requiredHits}`;
+            if (hitCount >= requiredHits && !surpriseRevealed) {
+                revealSurprise();
+            }
+        }
+
+        function revealSurprise() {
+            if (surpriseRevealed) return;
+            surpriseRevealed = true;
+
+            // සුන්දර අවුරුදු පුදුම පණිවිඩය + රන් තරුවක්
+            const surpriseHTML = `
+                <span>🌟🎇✨🌟</span><br>
+               
+                <strong style="font-size:1.5rem;">🎁 රන් ත්‍යාගය 🎁</strong><br>
+                🌟 සුබ අලුත් අවුරුද්දක් වේවා! 🌟<br>
+                ඔබටත් ඔබගේ යාළුවන්ටත් සතුට, සෙනෙහස,<br>
+                දියුණුව ලැබේවා! 🧧🌾🥥
+
+                <footer>@_Mahesh Nadun_</footer>
+            `;
+            giftMsgDiv.innerHTML = surpriseHTML;
+            // surprise box පෙන්වන්න
+            surpriseContainer.classList.remove('hidden-gift');
+            surpriseContainer.classList.add('gift-visible');
+
+            // coconut එකට crack effect + emoji change
+            const coconutEmojiSpan = coconutDiv.querySelector('.coconut-emoji');
+            coconutEmojiSpan.innerHTML = '🥥💥';
+            coconutDiv.style.background = "#b87a3a";
+            coconutDiv.style.transform = "scale(0.98)";
+            setTimeout(() => {
+                coconutEmojiSpan.innerHTML = '✨🥥✨';
+            }, 400);
+
+            showToastMessage("🎁 සප්‍රයිස් එක හමු වුණා! යාළුවන්ටත් කියන්න 💛");
+        }
+
+        function handleCoconutClick() {
+            if (surpriseRevealed) {
+                showToastMessage("ඔයා දැනටමත් කොකුම් කඩාගෙන! නැවත ආරම්භ කරන්න", false);
+                return;
+            }
+            if (hitCount < requiredHits) {
+                hitCount++;
+                // click effect
+                coconutDiv.style.transform = "scale(0.96)";
+                setTimeout(() => { coconutDiv.style.transform = ""; }, 120);
+                // vibrate light effect
+                updateHitDisplay();
+
+                // sound-like (visual only)
+                if (hitCount === requiredHits) {
+                    // last hit reveal surprise already called inside updateHitDisplay
+                } else {
+                    showToastMessage(`පහර ${hitCount}/${requiredHits}`, false);
+                }
+            }
+        }
+
+        // Reset game completely
+        function resetGame() {
+            hitCount = 0;
+            surpriseRevealed = false;
+            updateHitDisplay();
+
+            // reset surprise box
+            surpriseContainer.classList.remove('gift-visible');
+            surpriseContainer.classList.add('hidden-gift');
+            // reset coconut appearance
+            const coconutEmojiSpan = coconutDiv.querySelector('.coconut-emoji');
+            coconutEmojiSpan.innerHTML = '🥥';
+            coconutDiv.style.background = "#8b5a2b";
+            coconutDiv.style.transform = "";
+            // reset gift msg to default
+            giftMsgDiv.innerHTML = `🎁 <span>🎉🥥✨</span> 🎁`;
+
+            showToastMessage("🔄 ක්‍රීඩාව නැවත පටන් ගත්තා! පොල් ගෙඩිය කඩන්න උත්සාහ කරන්න.", false);
+        }
+
+        // Events
+        coconutDiv.addEventListener('click', handleCoconutClick);
+        resetBtn.addEventListener('click', resetGame);
+        whatsappBtn.addEventListener('click', shareToWhatsApp);
+
+        // bonus: initial state
+        updateHitDisplay();
+        surpriseContainer.classList.add('hidden-gift');
+        surpriseContainer.classList.remove('gift-visible');
+    })();
+</script>
+</body>
+</html>
